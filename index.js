@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const PORT = 9000;
 
 const { Server } = require('socket.io');
