@@ -2,102 +2,30 @@ const PORT = 9000;
 
 const { Server } = require('socket.io');
 const http = require('http');
-const zlib = require('zlib');
 const { open } = require('fs/promises');
 
 const httpServer = http.createServer(async (req, res) => {
-    const compressionEncodingList = req.headers['accept-encoding'].split(',').map(type => type.trim());
-    let encoding = null;
-    let transformStream = null;
-    if (compressionEncodingList.includes('br')) {
-        encoding = 'br';
-    } else if (compressionEncodingList.includes('gzip')) {
-        encoding = 'gzip';
-    }
     if (req.url === '/' && req.method === 'GET') {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/html');
-        if (encoding === 'gzip') {
-            res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Vary', 'Accept-Encoding');
-            transformStream = zlib.createGzip({
-                level: 9
-            });
-        } else if (encoding === 'br') {
-            res.setHeader('Content-Encoding', 'br');
-            res.setHeader('Vary', 'Accept-Encoding');
-            transformStream = zlib.createBrotliCompress({
-                params: {
-                    [zlib.constants.BROTLI_PARAM_QUALITY]: 11
-                }
-            });
-        }
         res.setHeader('Transfer-Encoding', 'chunked');
-        if (transformStream) {
-            const fileHandler = await open('./client/client.html');
-            const rs = fileHandler.createReadStream();
-            rs.pipe(transformStream).pipe(res);
-        } else {
-            const fileHandler = await open('./client/client.html');
-            const rs = fileHandler.createReadStream();
-            rs.pipe(res);
-        }
+        const fileHandler = await open('./client/client.html');
+        const rs = fileHandler.createReadStream();
+        rs.pipe(res);
     } else if (req.url === '/client.js' && req.method === 'GET') {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/javascript');
-        if (encoding === 'gzip') {
-            res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Vary', 'Accept-Encoding');
-            transformStream = zlib.createGzip({
-                level: 9
-            });
-        } else if (encoding === 'br') {
-            res.setHeader('Content-Encoding', 'br');
-            res.setHeader('Vary', 'Accept-Encoding');
-            transformStream = zlib.createBrotliCompress({
-                params: {
-                    [zlib.constants.BROTLI_PARAM_QUALITY]: 11
-                }
-            });
-        }
         res.setHeader('Transfer-Encoding', 'chunked');
-        if (transformStream) {
-            const fileHandler = await open('./client/client.js');
-            const rs = fileHandler.createReadStream();
-            rs.pipe(transformStream).pipe(res);
-        } else {
-            const fileHandler = await open('./client/client.js');
-            const rs = fileHandler.createReadStream();
-            rs.pipe(res);
-        }
+        const fileHandler = await open('./client/client.js');
+        const rs = fileHandler.createReadStream();
+        rs.pipe(res);
     } else if (req.url === '/client.css' && req.method === 'GET') {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/css');
-        if (encoding === 'gzip') {
-            res.setHeader('Content-Encoding', 'gzip');
-            res.setHeader('Vary', 'Accept-Encoding');
-            transformStream = zlib.createGzip({
-                level: 9
-            });
-        } else if (encoding === 'br') {
-            res.setHeader('Content-Encoding', 'br');
-            res.setHeader('Vary', 'Accept-Encoding');
-            transformStream = zlib.createBrotliCompress({
-                params: {
-                    [zlib.constants.BROTLI_PARAM_QUALITY]: 11
-                }
-            });
-        }
         res.setHeader('Transfer-Encoding', 'chunked');
-        if (transformStream) {
-            const fileHandler = await open('./client/client.css');
-            const rs = fileHandler.createReadStream();
-            rs.pipe(transformStream).pipe(res);
-        } else {
-            const fileHandler = await open('./client/client.css');
-            const rs = fileHandler.createReadStream();
-            rs.pipe(res);
-        }
+        const fileHandler = await open('./client/client.css');
+        const rs = fileHandler.createReadStream();
+        rs.pipe(res);
     }
 });
 const io = new Server(httpServer);
