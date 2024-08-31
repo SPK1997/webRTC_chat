@@ -152,6 +152,6 @@ io.on('connection', socket => {
     });
 });
 
-httpServer.listen(PORT, HOST, () => {
+httpServer.listen(PORT, () => {
     console.log('signal server up ...');
 })
