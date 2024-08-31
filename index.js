@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const PORT = 9000;
-const HOST = process.env.HOST || '127.0.0.1';
 
 const { Server } = require('socket.io');
 const http = require('http');
