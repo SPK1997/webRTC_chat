@@ -67,10 +67,6 @@ io.on('connection', socket => {
         client1 && client2 && io.emit('call-hang-up');
     });
 
-    socket.on('call-set-up', () => {
-        client1 && client2 && io.emit('call-set-up');
-    });
-
     socket.on('logout', () => {
         io.emit('logout');
         client1 = null;

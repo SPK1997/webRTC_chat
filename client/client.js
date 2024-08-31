@@ -75,16 +75,11 @@ function setUpSocketConnection() {
     socket.on('answer', async (data) => {
         webrtc.incomingAnswer = JSON.parse(data);
         await webrtc.localConnection.setRemoteDescription(webrtc.incomingAnswer);
-        socket.emit('call-set-up');
     });
 
     socket.on('call-hang-up', () => {
         webrtc = {};
         manageBtnState('app-call-hangup');
-    });
-
-    socket.on('call-set-up', () => {
-        manageBtnState('app-call-setup');
     });
 
     socket.on('logout', () => {
@@ -126,12 +121,15 @@ async function handleCall() {
         const iceCandidate = e.candidate;
         socket.emit('iceCandidate', JSON.stringify(iceCandidate));
     }
+    dc.onopen = (e) => {
+        manageBtnState('app-call-setup');
+    };
     dc.onmessage = (e) => {
         showMessageInDOM(e.data);
-    }
+    };
     dc.onerror = (error) => {
         console.log('oops!', error);
-    }
+    };
 
     const offer = await lc.createOffer();
     await lc.setLocalDescription(offer);
@@ -163,6 +161,9 @@ async function handleAnswer() {
         webrtc.dataChannel.onerror = (error) => {
             console.log('oops!', error);
         }
+        webrtc.dataChannel.onopen = (e) => {
+            manageBtnState('app-call-setup');
+        };
     }
     lc.onicecandidate = (e) => {
         const iceCandidate = e.candidate;
