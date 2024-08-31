@@ -1,4 +1,5 @@
-const PORT = 9000;
+const PORT = process.env.PORT || 9000;
+const HOST = process.env.HOST || '127.0.0.1';
 
 const { Server } = require('socket.io');
 const http = require('http');
@@ -77,6 +78,6 @@ io.on('connection', socket => {
     });
 });
 
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, HOST, () => {
     console.log('signal server up ...');
 })
