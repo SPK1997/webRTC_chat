@@ -218,7 +218,7 @@ function clearMessageInDOM() {
 }
 
 async function setupVideoAudio() {
-    if (window.navigator.mediaDevices) {
+    if (!window.navigator.mediaDevices) {
         return;
     }
     const stream = await window.navigator.mediaDevices.getUserMedia({ video: true, audio: true });
