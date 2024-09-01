@@ -224,7 +224,7 @@ async function setupVideoAudio() {
     const stream = await window.navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     myVideoContainer.srcObject = stream;
     for (let track of stream.getTracks()) {
-        webrtc.localConnection.addTrack(track);
+        webrtc.localConnection.addTrack(track, stream);
     }
     webrtc.localConnection.ontrack = (e) => {
         const stream = e.streams[0];
