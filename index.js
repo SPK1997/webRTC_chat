@@ -74,6 +74,6 @@ io.on('connection', socket => {
     });
 });
 
-httpServer.listen(PORT, HOST, () => {
+httpServer.listen(PORT, '172.20.10.7', () => {
     console.log('signal server up ...');
 })

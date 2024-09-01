@@ -7,6 +7,8 @@ const callBtn = document.querySelector('.control-btn-container').children[1];
 const answerBtn = document.querySelector('.control-btn-container').children[2];
 const hangupBtn = document.querySelector('.control-btn-container').children[3];
 const logoutBtn = document.querySelector('.control-btn-container').children[4];
+const myVideoContainer = document.querySelector('.my-video');
+const friendVideoContainer = document.querySelector('.friend-video');
 
 function manageBtnState(iScenario) {
     if (iScenario === 'app-start') {
@@ -116,6 +118,7 @@ async function handleCall() {
     const dc = lc.createDataChannel('data-channel-1');
     webrtc.localConnection = lc;
     webrtc.dataChannel = dc;
+    await setupVideoAudio();
 
     lc.onicecandidate = (e) => {
         const iceCandidate = e.candidate;
@@ -131,6 +134,7 @@ async function handleCall() {
         console.log('oops!', error);
     };
 
+    console.log('offer made');
     const offer = await lc.createOffer();
     await lc.setLocalDescription(offer);
     socket.emit('offer', JSON.stringify(offer));
@@ -152,6 +156,7 @@ async function handleAnswer() {
         ]
     });
     webrtc.localConnection = lc;
+    await setupVideoAudio();
 
     lc.ondatachannel = (e) => {
         webrtc.dataChannel = e.channel;
@@ -170,6 +175,7 @@ async function handleAnswer() {
         socket.emit('iceCandidate', JSON.stringify(iceCandidate));
     }
 
+    console.log('answer made');
     await lc.setRemoteDescription(webrtc.incomingOffer);
     const answer = await lc.createAnswer();
     await lc.setLocalDescription(answer);
@@ -209,6 +215,21 @@ function showMessageInDOM(iMessage, who) {
 
 function clearMessageInDOM() {
     textDisplayContainer.innerText = "";
+}
+
+async function setupVideoAudio() {
+    if (!window.navigator.mediaDevices) {
+        return;
+    }
+    const stream = await window.navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    myVideoContainer.srcObject = stream;
+    for (let track of stream.getTracks()) {
+        webrtc.localConnection.addTrack(track);
+    }
+    webrtc.localConnection.ontrack = (e) => {
+        const stream = e.streams[0];
+        friendVideoContainer.srcObject = stream;
+    }
 }
 
 //APP START
