@@ -218,11 +218,10 @@ function clearMessageInDOM() {
 }
 
 async function setupVideoAudio() {
-    let getUserMedia = window.navigator.getUserMedia || window.navigator.webkitGetUserMedia || window.navigator.mozGetUserMedia;
-    if (!getUserMedia) {
+    if (window.navigator.mediaDevices) {
         return;
     }
-    const stream = await getUserMedia({ video: true, audio: true });
+    const stream = await window.navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     myVideoContainer.srcObject = stream;
     for (let track of stream.getTracks()) {
         webrtc.localConnection.addTrack(track, stream);
