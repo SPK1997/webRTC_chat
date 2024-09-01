@@ -221,14 +221,18 @@ async function setupVideoAudio() {
     if (!window.navigator.mediaDevices) {
         return;
     }
-    const stream = await window.navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    myVideoContainer.srcObject = stream;
-    for (let track of stream.getTracks()) {
-        webrtc.localConnection.addTrack(track, stream);
-    }
-    webrtc.localConnection.ontrack = (e) => {
-        const stream = e.streams[0];
-        friendVideoContainer.srcObject = stream;
+    try {
+        const stream = await window.navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        myVideoContainer.srcObject = stream;
+        for (let track of stream.getTracks()) {
+            webrtc.localConnection.addTrack(track, stream);
+        }
+        webrtc.localConnection.ontrack = (e) => {
+            const stream = e.streams[0];
+            friendVideoContainer.srcObject = stream;
+        }
+    } catch (error) {
+        console.log('camera/mic not used!');
     }
 }
 
